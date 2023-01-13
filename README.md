@@ -1,5 +1,5 @@
 # PyTorch Gaussian Diffusion
-This repository is an implementation of Guassian Diffusion model for image. Although the code is concentrated on image, the gaussian diffusion module iteself does not make the assumption that inputs are image. It is the neural network used during diffusion highly related to data type. We aim to implement Gaussian diffuion module straightforwardly.
+This repository is an implementation of Guassian Diffusion model for image. Although the code is concentrated on image, the gaussian diffusion module iteself does not make the assumption that inputs are image. It is the neural network used during diffusion highly related to data type. We aim to implement Gaussian diffusion module straightforwardly.
 
 ## Gaussian Diffusion
 ### Basic Assumption
