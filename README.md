@@ -2,7 +2,7 @@
 This repository is an implementation of Gaussian Diffusion model for image. Although the code is concentrated on image, the gaussian diffusion module iteself does not make the assumption that inputs are image. It is the neural network used during diffusion highly related to data type. We aim to implement Gaussian diffusion module straightforwardly.
 
 ## Gaussian Diffusion
-### Basic Assumption
+### 1. Basic Assumption
 
 The data distribution is gradually converted into a well behaved (analytically tractable) distribution $\pi(\mathbf{y})$ by repeated application of a Markov diffusion kernel $T_{\pi}(\mathbf{y}\vert \mathbf{y}';\beta)$ for $\pi(\mathbf{y})$, where $\beta$ is the diffusion rate.
 
@@ -28,7 +28,7 @@ $$
 p(\mathbf{x}^{(0)})=\int p(\mathbf{x}^{(0\cdots T)})\ d\mathbf{x}^{(1\cdots T)}=\int p(\mathbf{x}^{(T)}) \prod_{t=1}^T p(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(t\cdots T)}) \ d\mathbf{x}^{(1\cdots T)} =\int p(\mathbf{x}^{(T)}) \prod_{t=1}^T p(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(t)})\ d\mathbf{x}^{(1\cdots T)}.
 $$
 
-### Objective Function
+### 2. Objective Function
 
 The common objective function in data modeling, cross entropy loss becomes:
 
@@ -140,7 +140,7 @@ $$
 
 The KL-divergence is a function of $\mathbf{x}^{(0)}$ and $\mathbf{x}^{(t)}$ and can be computed analytically. Intuitively, this objective function is a combination of a series of sub-functions and each sub-function is only relevant to one timestamp.
 
-#### Conditional Distribution $q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(0)})$
+#### 2.1 Conditional Distribution $q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(0)})$
 
 Recall that $q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(t-1)})=\mathcal{N}(\mathbf{x}^{(t)};\sqrt{1-\beta_t}\mathbf{x}^{(t-1)},\beta_t\mathbf{I})$. Using the reparameterization trick, in the forward process, we have:
 
@@ -166,7 +166,7 @@ $$
 q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(0)})=\mathcal{N}(\mathbf{x}^{(t)};\sqrt{\prod_{i=1}^t \alpha_i}\mathbf{x}^{(0)},(1-\prod_{i=1}^t \alpha_i)\mathbf{I})=\mathcal{N}(\mathbf{x}^{(t)};\sqrt{\bar{\alpha}_t}\mathbf{x}^{(0)},(1-\bar{\alpha}_t)\mathbf{I}).
 $$
 
-#### Computing KL-divergence
+#### 2.2 Computing KL-divergence
 [The KL-divergence between two multivariate Gaussian (normal) distributions](https://web.stanford.edu/~jduchi/projects/general_notes.pdf) is:
 
 $$
@@ -194,7 +194,7 @@ $$
 
 Therefore, $D_{KL}(q(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(0)},\mathbf{x}^{(t)})\Vert p(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(t)}))$ can be analytically computed.
 
-#### Monte Carlo Estimates
+#### 2.3 Monte Carlo Estimates
 In practice, we treat each datapoint $\mathbf{x}^{(0)}$ as an individual sample from the underlying distribution $q(\mathbf{x}^{(0)})$. Hence the objective function can be estimated as:
 
 $$
@@ -212,7 +212,7 @@ $$
 
 In this estimation, $\mathbf{x}^{(0)}$ is given from the dataset and for each time step t, $\mathbf{x}^{(t)}$ is a sample from $q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(0)})=\mathcal{N}(\mathbf{x}^{(t)};\sqrt{\bar{\alpha}_t}\mathbf{x}^{(0)},(1-\bar{\alpha}_t)\mathbf{I})$.
 
-### Optimization
+### 3. Optimization
 Use notations:
 
 $$
@@ -234,7 +234,7 @@ $$
 \operatorname*{argmax} K=\operatorname*{argmin}_{\alpha_{1\cdots T},\ \boldsymbol{\mu}_{1\cdots T},\ \boldsymbol{\Sigma}_{1\cdots T}}\mathcal{L}(\mathbf{x}^{(0\cdots T)};\alpha_{1\cdots T},\boldsymbol{\mu}_{1\cdots T},\boldsymbol{\Sigma}_{1\cdots T}).
 $$
 
-#### Choice of $\boldsymbol{\Sigma}_t$
+#### 3.1 Choice of $\boldsymbol{\Sigma}_t$
 The analytical computation of KL-divergence requires the computation of determinant and inverse of $\boldsymbol{\Sigma}_t$, which can be time-consuming. The common practice is to set it to a diagonal matrix:
 
 $$
@@ -273,7 +273,7 @@ $$
 \mathcal{L}_0=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu}_t-\bar{\boldsymbol{\mu}}_t\rVert}^2+\bar{\alpha}_T{\lVert \mathbf{x}^{(0)}\rVert}^2+n(\sum_{t=2}^T (\log \frac{\sigma_t^2}{\bar{\sigma}_t^2}-1+\frac{\bar{\sigma}_t^2}{\sigma_t^2})+\log 2\pi \sigma_1^2-\bar{\alpha}_T-\log (1-\bar{\alpha}_T)).
 $$
 
-#### Learnable Parameters Setting
+#### 3.2 Learnable Parameters Setting
 In $\mathcal{L}_0$, learnable parameters are: 
 
 $$\alpha_{1\cdots T},\boldsymbol{\mu}_{1\cdots T},\sigma^2_{1\cdots T}.$$
@@ -294,7 +294,7 @@ The constant values of $\sigma^2_{1\cdots T}$ can be set as $\sigma^2_t=\beta_t$
 
 For $\boldsymbol{\mu}_{1\cdots T}$, we can use a shared deep neural network parameterized by $\theta$ to estimate them in three settings. The network takes a vector with the dimensionality of $\mathbf{x}^{(0)}$ as input and outputs a vector with the same dimensionality. In order to behave differently across different time steps, the network should also be time-aware.
 
-##### Direct Prediction
+##### 3.2 Direct Prediction
 
 $$
 \boldsymbol{\mu}_t=\boldsymbol{\hat\mu}_\theta(\mathbf{x}^{(t)},t),
@@ -304,7 +304,7 @@ $$
 \mathcal{L}_2^{\text{dir}}=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu}_t-\bar{\boldsymbol{\mu}}_t\rVert}^2=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\hat\mu}_\theta(\mathbf{x}^{(t)},t)-\frac{(1-\bar{\alpha}_{t-1})\sqrt{\alpha_t}\mathbf{x}^{(t)}+(1-\alpha_t)\sqrt{\bar{\alpha}_{t-1}}\mathbf{x}^{(0)}}{1-\bar{\alpha}_t}\rVert}^2.
 $$
 
-##### Reconstruction
+##### 3.2 Reconstruction
 
 $$
 \boldsymbol{\mu}_t=\frac{(1-\bar{\alpha}_{t-1})\sqrt{\alpha_t}\mathbf{x}^{(t)}+(1-\alpha_t)\sqrt{\bar{\alpha}_{t-1}}\mathbf{\hat x}_\theta^{(0)}(\mathbf{x}^{(t)},t)}{1-\bar{\alpha}_t},
@@ -314,7 +314,7 @@ $$
 \mathcal{L}_2^{\text{rec}}=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu}_t-\bar{\boldsymbol{\mu}}_t\rVert}^2=\sum_{t=1}^T \frac{\bar{\alpha}_{t-1}{(1-\alpha_t)}^2}{\sigma_t^2{(1-\bar{\alpha}_t)}^2}{\lVert \mathbf{\hat x}_\theta^{(0)}(\mathbf{x}^{(t)},t)-\mathbf{x}^{(0)}\rVert}^2.
 $$
 
-##### Denoising
+##### 3.2 Denoising
 Recall that $\mathbf{x}^{(t)}$ is sampled from $q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(0)})=\mathcal{N}(\mathbf{x}^{(t)};\sqrt{\bar{\alpha}_t}\mathbf{x}^{(0)},(1-\bar{\alpha}_t)\mathbf{I})$ by using reparameterization trick $\mathbf{x}^{(t)}=\sqrt{\bar{\alpha}_t}\mathbf{x}^{(0)}+\sqrt{1-\bar{\alpha}_t}\boldsymbol{\epsilon}_t$, where $\boldsymbol{\epsilon}_t\sim\mathcal{N}(\mathbf{0},\mathbf{I})$. We have:
 
 $$
@@ -339,7 +339,7 @@ $$
 
 We prefer the last two loss functions because they remove the simple linear transformation from the input to the output. Now, the optimization becomes $\operatorname*{argmin}_{\theta}\mathcal{L}_2$.
 
-#### Further Simplification for Training
+#### 3.3 Further Simplification for Training
 
 In deep learning, to optimize $\mathcal{L}_2$ for one datapoint, we need to do sampling and forward the neural network for $T$ times, and then do backward. For large $T$, the model needs to wait for a huge amount of time and use a large amount of memory for one update of parameters. This is both time-inefficient and memory-consuming. Since $\mathcal{L}_2$ is a sum of $T$ sub-functions, like stochastic gradient descent to gradient descent, for each iteration, we can sample one $t$ uniformly from $\\{1\cdots T\\}$ and do optimization:
 
