@@ -1,0 +1,60 @@
+{
+    "schedule": {
+        "name": "LinearSchedule",
+        "kwargs": {
+            "timesteps": 1000,
+            "start": 0.0001,
+            "end": 0.02
+            }
+        },
+    "time_aware_net": {
+        "name": "TimeAwareUNet",
+        "kwargs": {
+            "n_channels": 3,
+            "base_channels": 128,
+            "t_channels": 64,
+            "ch_mult": [1, 2, 2, 2]
+            }
+        },
+    "dataset": {
+        "name": "CIFAR10",
+        "train": {
+            "root": "Data/CIFAR10/", 
+            "train": true,
+            "pipeline": [
+                {"name": "RandomHorizontalFlip"},
+                {"name": "ToTensor"}
+                ]
+            },
+        "valid": {
+            "root": "Data/CIFAR10/", 
+            "train": false,
+            "pipeline": [
+                {"name": "RandomHorizontalFlip"},
+                {"name": "ToTensor"}
+                ]
+            }, 
+        "test": {
+            "root": "Data/CIFAR10/", 
+            "train": false,
+            "pipeline": [
+                {"name": "RandomHorizontalFlip"},
+                {"name": "ToTensor"}
+                ]
+            }
+        },
+    "diffusion": {
+        "reverse_variance": "beta", 
+        "prediction": "denoising",
+        "loss_mode": "simple"   
+    },
+    "train_cfg": {
+        "epochs": 1000,
+        "batch_size": 128,
+        "lr": 0.0002,
+        "record_period": 50,
+        "save_period": 100,
+        "save_best": true,
+        "model_save_dirpath": "model/CIFAR10_den"
+    }
+}

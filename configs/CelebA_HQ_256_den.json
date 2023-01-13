@@ -1,0 +1,57 @@
+{
+    "schedule": {
+        "name": "LinearSchedule",
+        "kwargs": {
+            "timesteps": 1000,
+            "start": 0.0001,
+            "end": 0.02
+            }
+        },
+    "time_aware_net": {
+        "name": "TimeAwareUNet",
+        "kwargs": {
+            "n_channels": 3,
+            "base_channels": 128,
+            "t_channels": 64,
+            "ch_mult": [1, 1, 2, 2, 4, 4]
+            }
+        },
+    "dataset": {
+        "name": "CelebA_HQ_256",
+        "train": {
+            "root": "Data/celeba_hq_256/train", 
+            "pipeline": [
+                {"name": "RandomHorizontalFlip"},
+                {"name": "ToTensor"}
+                ]
+            },
+        "valid": {
+            "root": "Data/celeba_hq_256/valid", 
+            "pipeline": [
+                {"name": "RandomHorizontalFlip"},
+                {"name": "ToTensor"}
+                ]
+            }, 
+        "test": {
+            "root": "Data/celeba_hq_256/valid", 
+            "pipeline": [
+                {"name": "RandomHorizontalFlip"},
+                {"name": "ToTensor"}
+                ]
+            }
+        },
+    "diffusion": {
+        "reverse_variance": "beta", 
+        "prediction": "denoising",
+        "loss_mode": "simple"   
+    },
+    "train_cfg": {
+        "epochs": 150,
+        "batch_size": 32,
+        "lr": 0.00002,
+        "record_period": 50,
+        "save_period": 15,
+        "save_best": true,
+        "model_save_dirpath": "model/CelebA_HQ_256_den"
+    }
+}
