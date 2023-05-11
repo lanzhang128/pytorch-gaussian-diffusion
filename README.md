@@ -2,6 +2,7 @@
 This repository is an implementation of Gaussian Diffusion model for image. Although the code is concentrated on image, the gaussian diffusion module iteself does not make the assumption that inputs are image. It is the neural network used during diffusion highly related to data type. We aim to implement Gaussian diffusion module straightforwardly.
 
 ## Gaussian Diffusion
+You can find a PDF version of the following content [here](Guassian_Diffusion.pdf)
 ### 1. Basic Assumption
 
 The data distribution is gradually converted into a well behaved (analytically tractable) distribution $\pi(\mathbf{y})$ by repeated application of a Markov diffusion kernel $T_{\pi}(\mathbf{y}\vert \mathbf{y}';\beta)$ for $\pi(\mathbf{y})$, where $\beta$ is the diffusion rate.
@@ -22,7 +23,7 @@ $$
 q(\mathbf{x}^{(0\cdots T)})=q(\mathbf{x}^{(0)})\prod_{t=1}^T q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(0\cdots(t-1))})=q(\mathbf{x}^{(0)})\prod_{t=1}^T q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(t-1)}).
 $$
 
-For continuous Gaussian diffusion (limit of small step size $\beta_t$), the reversal of the diffusion process has the identical functional form as the forward process ([On the theory of stochastic processes, with particular reference to applications, W. Feller, 1949](https://www.semanticscholar.org/paper/On-the-Theory-of-Stochastic-Processes%2C-with-to-Feller/4cdcf495232f3ec44183dc74cd8eca4b44c2de64)). Therefore, if $\beta_t$ is small, $q(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(t)})$ should also be a Gaussian. Similar to Variational Autoencoder (VAE), we use $p(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(t)})=\mathcal{N}(\mathbf{x}^{(t-1)};f_\boldsymbol{\mu}^{(t)}(\mathbf{x}^{(t)}),f_{\boldsymbol{\Sigma}}^{(t)}(\mathbf{x}^{(t)}))$ to recognize this distribution in the reverse Markov process. We also assume that at the end of the diffusion process $p(\mathbf{x}^{(T)})=\pi(\mathbf{x}^{(T)})=\mathcal{N}(\mathbf{x}^{(T)};\mathbf{0},\mathbf{I})$. Then the probability of the original data $\mathbf{x}^{(0)}$ under this process is:
+For continuous Gaussian diffusion (limit of small step size $\beta_t$), the reversal of the diffusion process has the identical functional form as the forward process ([On the theory of stochastic processes, with particular reference to applications, W. Feller, 1949](https://www.semanticscholar.org/paper/On-the-Theory-of-Stochastic-Processes%2C-with-to-Feller/4cdcf495232f3ec44183dc74cd8eca4b44c2de64)). Therefore, if $\beta_t$ is small, $q(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(t)})$ should also be a Gaussian. Similar to Variational Autoencoder (VAE), we use $p(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(t)})=\mathcal{N}(\mathbf{x}^{(t-1)};f_{\boldsymbol{\mu}}^{(t)}(\mathbf{x}^{(t)}),f_{\boldsymbol{\Sigma}}^{(t)}(\mathbf{x}^{(t)}))$ to recognize this distribution in the reverse Markov process. We also assume that at the end of the diffusion process $p(\mathbf{x}^{(T)})=\pi(\mathbf{x}^{(T)})=\mathcal{N}(\mathbf{x}^{(T)};\mathbf{0},\mathbf{I})$. Then the probability of the original data $\mathbf{x}^{(0)}$ under this process is:
 
 $$
 p(\mathbf{x}^{(0)})=\int p(\mathbf{x}^{(0\cdots T)})\ d\mathbf{x}^{(1\cdots T)}=\int p(\mathbf{x}^{(T)}) \prod_{t=1}^T p(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(t\cdots T)}) \ d\mathbf{x}^{(1\cdots T)} =\int p(\mathbf{x}^{(T)}) \prod_{t=1}^T p(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(t)})\ d\mathbf{x}^{(1\cdots T)}.
@@ -182,13 +183,13 @@ $$
 \end{split}
 $$
 
-We already know $p(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(t)})=\mathcal{N}(\mathbf{x}^{(t-1)};f_\boldsymbol{\mu}^{(t)}(\mathbf{x}^{(t)}),f_{\boldsymbol{\Sigma}}^{(t)}(\mathbf{x}^{(t)}))$, and for $t>1$:
+We already know $p(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(t)})=\mathcal{N}(\mathbf{x}^{(t-1)};f_{\boldsymbol{\mu}}^{(t)}(\mathbf{x}^{(t)}),f_{\boldsymbol{\Sigma}}^{(t)}(\mathbf{x}^{(t)}))$, and for $t>1$:
 
 $$
 \begin{split}
-q(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(0)},\mathbf{x}^{(t)})&=\frac{q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(t-1)},\mathbf{x}^{(0)})q(\mathbf{x}^{(0)},\mathbf{x}^{(t-1)})}{q(\mathbf{x}^{(0)},\mathbf{x}^{(t)})}=\frac{q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(t-1)})q(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(0)})}{q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(0)})}\\
- &=\sqrt{(\frac{1-\bar{\alpha}_t}{2\pi(1-\alpha_t)(1-\bar{\alpha}_{t-1})})^n}\exp(-(\frac{(\mathbf{x}^{(t)}-\sqrt{\alpha_t}\mathbf{x}^{(t-1)})^2}{2(1-\alpha_t)}+\frac{(\mathbf{x}^{(t-1)}-\sqrt{\bar{\alpha}_{t-1}}\mathbf{x}^{(0)})^2}{2(1-\bar{\alpha}_{t-1})}-\frac{(\mathbf{x}^{(t)}-\sqrt{\bar{\alpha}_t}\mathbf{x}^{(0)})^2}{2(1-\bar{\alpha}_t)}))\\
- &=\mathcal{N}(\mathbf{x}^{(t-1)};\frac{(1-\bar{\alpha}_{t-1})\sqrt{\alpha_t}\mathbf{x}^{(t)}+(1-\alpha_t)\sqrt{\bar{\alpha}_{t-1}}\mathbf{x}^{(0)}}{1-\bar{\alpha}_t},\frac{(1-\alpha_t)(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_t}\mathbf{I}).
+&q(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(0)},\mathbf{x}^{(t)})=\frac{q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(t-1)},\mathbf{x}^{(0)})q(\mathbf{x}^{(0)},\mathbf{x}^{(t-1)})}{q(\mathbf{x}^{(0)},\mathbf{x}^{(t)})}=\frac{q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(t-1)})q(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(0)})}{q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(0)})}\\
+ =&\sqrt{(\frac{1-\bar{\alpha}_t}{2\pi(1-\alpha_t)(1-\bar{\alpha}_{t-1})})^n}\exp(-(\frac{(\mathbf{x}^{(t)}-\sqrt{\alpha_t}\mathbf{x}^{(t-1)})^2}{2(1-\alpha_t)}+\frac{(\mathbf{x}^{(t-1)}-\sqrt{\bar{\alpha}_{t-1}}\mathbf{x}^{(0)})^2}{2(1-\bar{\alpha}_{t-1})}-\frac{(\mathbf{x}^{(t)}-\sqrt{\bar{\alpha}_t}\mathbf{x}^{(0)})^2}{2(1-\bar{\alpha}_t)}))\\
+ =&\mathcal{N}(\mathbf{x}^{(t-1)};\frac{(1-\bar{\alpha}_{t-1})\sqrt{\alpha_t}\mathbf{x}^{(t)}+(1-\alpha_t)\sqrt{\bar{\alpha}_{t-1}}\mathbf{x}^{(0)}}{1-\bar{\alpha}_t},\frac{(1-\alpha_t)(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_t}\mathbf{I}).
 \end{split}
 $$
 
@@ -216,7 +217,7 @@ In this estimation, $\mathbf{x}^{(0)}$ is given from the dataset and for each ti
 Use notations:
 
 $$
-\boldsymbol{\mu}_t=f_\boldsymbol{\mu}^{(t)}(\mathbf{x}^{(t)}),\boldsymbol{\Sigma}_t=f_{\boldsymbol{\Sigma}}^{(t)}(\mathbf{x}^{(t)}).
+\boldsymbol{\mu}_t=f_{\boldsymbol{\mu}}^{(t)}(\mathbf{x}^{(t)}),\boldsymbol{\Sigma}_t=f_{\boldsymbol{\Sigma}}^{(t)}(\mathbf{x}^{(t)}).
 $$
 
 Let:
@@ -294,7 +295,7 @@ The constant values of $\sigma^2_{1\cdots T}$ can be set as $\sigma^2_t=\beta_t$
 
 For $\boldsymbol{\mu}_{1\cdots T}$, we can use a shared deep neural network parameterized by $\theta$ to estimate them in three settings. The network takes a vector with the dimensionality of $\mathbf{x}^{(0)}$ as input and outputs a vector with the same dimensionality. In order to behave differently across different time steps, the network should also be time-aware.
 
-##### 3.2 Direct Prediction
+##### 3.2.1 Direct Prediction
 
 $$
 \boldsymbol{\mu}_t=\boldsymbol{\hat\mu}_\theta(\mathbf{x}^{(t)},t),
@@ -304,7 +305,7 @@ $$
 \mathcal{L}_2^{\text{dir}}=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu}_t-\bar{\boldsymbol{\mu}}_t\rVert}^2=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\hat\mu}_\theta(\mathbf{x}^{(t)},t)-\frac{(1-\bar{\alpha}_{t-1})\sqrt{\alpha_t}\mathbf{x}^{(t)}+(1-\alpha_t)\sqrt{\bar{\alpha}_{t-1}}\mathbf{x}^{(0)}}{1-\bar{\alpha}_t}\rVert}^2.
 $$
 
-##### 3.2 Reconstruction
+##### 3.2.2 Reconstruction
 
 $$
 \boldsymbol{\mu}_t=\frac{(1-\bar{\alpha}_{t-1})\sqrt{\alpha_t}\mathbf{x}^{(t)}+(1-\alpha_t)\sqrt{\bar{\alpha}_{t-1}}\mathbf{\hat x}_\theta^{(0)}(\mathbf{x}^{(t)},t)}{1-\bar{\alpha}_t},
@@ -314,7 +315,7 @@ $$
 \mathcal{L}_2^{\text{rec}}=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu}_t-\bar{\boldsymbol{\mu}}_t\rVert}^2=\sum_{t=1}^T \frac{\bar{\alpha}_{t-1}{(1-\alpha_t)}^2}{\sigma_t^2{(1-\bar{\alpha}_t)}^2}{\lVert \mathbf{\hat x}_\theta^{(0)}(\mathbf{x}^{(t)},t)-\mathbf{x}^{(0)}\rVert}^2.
 $$
 
-##### 3.2 Denoising
+##### 3.2.3 Denoising
 Recall that $\mathbf{x}^{(t)}$ is sampled from $q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(0)})=\mathcal{N}(\mathbf{x}^{(t)};\sqrt{\bar{\alpha}_t}\mathbf{x}^{(0)},(1-\bar{\alpha}_t)\mathbf{I})$ by using reparameterization trick $\mathbf{x}^{(t)}=\sqrt{\bar{\alpha}_t}\mathbf{x}^{(0)}+\sqrt{1-\bar{\alpha}_t}\boldsymbol{\epsilon}_t$, where $\boldsymbol{\epsilon}_t\sim\mathcal{N}(\mathbf{0},\mathbf{I})$. We have:
 
 $$
@@ -341,7 +342,7 @@ We prefer the last two loss functions because they remove the simple linear tran
 
 #### 3.3 Further Simplification for Training
 
-In deep learning, to optimize $\mathcal{L}_2$ for one datapoint, we need to do sampling and forward the neural network for $T$ times, and then do backward. For large $T$, the model needs to wait for a huge amount of time and use a large amount of memory for one update of parameters. This is both time-inefficient and memory-consuming. Since $\mathcal{L}_2$ is a sum of $T$ sub-functions, like stochastic gradient descent to gradient descent, for each iteration, we can sample one $t$ uniformly from $\\{1\cdots T\\}$ and do optimization:
+In deep learning, to optimize $\mathcal{L}_2$ for one datapoint, we need to do sampling and forward the neural network for $T$ times, and then do backward. For large $T$, the model needs to wait for a huge amount of time and use a large amount of memory for one update of parameters. This is both time-inefficient and memory-consuming. Since $\mathcal{L}_2$ is a sum of $T$ sub-functions, like stochastic gradient descent to gradient descent, for each iteration, we can sample one $t$ uniformly from $1\cdots T$ and do optimization:
 
 $$
 \operatorname*{argmin}_{\theta}\frac{\bar{\alpha}_{t-1}{(1-\alpha_t)}^2}{\sigma_t^2{(1-\bar{\alpha}_t)}^2}{\lVert \mathbf{\hat x}_\theta^{(0)}(\mathbf{x}^{(t)},t)-\mathbf{x}^{(0)}\rVert}^2 \text{ or } \operatorname*{argmin}_{\theta}\frac{{(1-\alpha_t)}^2}{\sigma_t^2\alpha_t(1-\bar{\alpha}_t)}{\lVert \boldsymbol{\hat\epsilon}_\theta(\mathbf{x}^{(t)},t)-\boldsymbol{\epsilon}_t\rVert}^2.
