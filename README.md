@@ -2,7 +2,7 @@
 This repository is an implementation of Gaussian Diffusion model for image. Although the code is concentrated on image, the gaussian diffusion module iteself does not make the assumption that inputs are image. It is the neural network used during diffusion highly related to data type. We aim to implement Gaussian diffusion module straightforwardly.
 
 ## Gaussian Diffusion
-You can find a PDF version of the following content [here](Guassian_Diffusion.pdf)
+You can find a PDF version of the following content [here](Gaussian_Diffusion.pdf).
 ### 1. Basic Assumption
 
 The data distribution is gradually converted into a well behaved (analytically tractable) distribution $\pi(\mathbf{y})$ by repeated application of a Markov diffusion kernel $T_{\pi}(\mathbf{y}\vert \mathbf{y}';\beta)$ for $\pi(\mathbf{y})$, where $\beta$ is the diffusion rate.
@@ -164,7 +164,7 @@ $$
 This is equivalent to:
 
 $$
-q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(0)})=\mathcal{N}(\mathbf{x}^{(t)};\sqrt{\prod_{i=1}^t \alpha_i}\mathbf{x}^{(0)},(1-\prod_{i=1}^t \alpha_i)\mathbf{I})=\mathcal{N}(\mathbf{x}^{(t)};\sqrt{\bar{\alpha}_t}\mathbf{x}^{(0)},(1-\bar{\alpha}_t)\mathbf{I}).
+q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(0)})=\mathcal{N}(\mathbf{x}^{(t)};\sqrt{\prod_{i=1}^t \alpha_i}\mathbf{x}^{(0)},(1-\prod_{i=1}^t \alpha_i)\mathbf{I})=\mathcal{N}(\mathbf{x}^{(t)};\sqrt{\bar{\alpha_t}}\mathbf{x}^{(0)},(1-\bar{\alpha_t})\mathbf{I}).
 $$
 
 #### 2.2 Computing KL-divergence
@@ -179,7 +179,7 @@ The third term in $K$ can be converted to:
 $$
 \begin{split}
 \int q(\mathbf{x}^{(0)},\mathbf{x}^{(T)}) \log \frac{p(\mathbf{x}^{(T)})}{q(\mathbf{x}^{(T)}\vert \mathbf{x}^{(0)})}\ d\mathbf{x}^{(0)}\ d\mathbf{x}^{(T)}&=-\int q(\mathbf{x}^{(0)})D_{KL}(q(\mathbf{x}^{(T)}\vert \mathbf{x}^{(0)})\Vert p(\mathbf{x}^{(T)}))\ d\mathbf{x}^{(0)}\\
- &=-\int \frac{1}{2}(\bar{\alpha}_T{\lVert \mathbf{x}^{(0)}\rVert}^2-n\bar{\alpha}_T-n\log (1-\bar{\alpha}_T))q(\mathbf{x}^{(0)})\ d\mathbf{x}^{(0)}.
+ &=-\int \frac{1}{2}(\bar{\alpha_T}{\lVert \mathbf{x}^{(0)}\rVert}^2-n\bar{\alpha_T}-n\log (1-\bar{\alpha_T}))q(\mathbf{x}^{(0)})\ d\mathbf{x}^{(0)}.
 \end{split}
 $$
 
@@ -188,8 +188,8 @@ We already know $p(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(t)})=\mathcal{N}(\mathbf
 $$
 \begin{split}
 &q(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(0)},\mathbf{x}^{(t)})=\frac{q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(t-1)},\mathbf{x}^{(0)})q(\mathbf{x}^{(0)},\mathbf{x}^{(t-1)})}{q(\mathbf{x}^{(0)},\mathbf{x}^{(t)})}=\frac{q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(t-1)})q(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(0)})}{q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(0)})}\\
- =&\sqrt{(\frac{1-\bar{\alpha}_t}{2\pi(1-\alpha_t)(1-\bar{\alpha}_{t-1})})^n}\exp(-(\frac{(\mathbf{x}^{(t)}-\sqrt{\alpha_t}\mathbf{x}^{(t-1)})^2}{2(1-\alpha_t)}+\frac{(\mathbf{x}^{(t-1)}-\sqrt{\bar{\alpha}_{t-1}}\mathbf{x}^{(0)})^2}{2(1-\bar{\alpha}_{t-1})}-\frac{(\mathbf{x}^{(t)}-\sqrt{\bar{\alpha}_t}\mathbf{x}^{(0)})^2}{2(1-\bar{\alpha}_t)}))\\
- =&\mathcal{N}(\mathbf{x}^{(t-1)};\frac{(1-\bar{\alpha}_{t-1})\sqrt{\alpha_t}\mathbf{x}^{(t)}+(1-\alpha_t)\sqrt{\bar{\alpha}_{t-1}}\mathbf{x}^{(0)}}{1-\bar{\alpha}_t},\frac{(1-\alpha_t)(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_t}\mathbf{I}).
+ =&\sqrt{(\frac{1-\bar{\alpha_t}}{2\pi(1-\alpha_t)(1-\bar{\alpha_{t-1}})})^n}\exp(-(\frac{(\mathbf{x}^{(t)}-\sqrt{\alpha_t}\mathbf{x}^{(t-1)})^2}{2(1-\alpha_t)}+\frac{(\mathbf{x}^{(t-1)}-\sqrt{\bar{\alpha_{t-1}}}\mathbf{x}^{(0)})^2}{2(1-\bar{\alpha_{t-1}})}-\frac{(\mathbf{x}^{(t)}-\sqrt{\bar{\alpha_t}}\mathbf{x}^{(0)})^2}{2(1-\bar{\alpha_t})}))\\
+ =&\mathcal{N}(\mathbf{x}^{(t-1)};\frac{(1-\bar{\alpha_{t-1}})\sqrt{\alpha_t}\mathbf{x}^{(t)}+(1-\alpha_t)\sqrt{\bar{\alpha_{t-1}}}\mathbf{x}^{(0)}}{1-\bar{\alpha_t}},\frac{(1-\alpha_t)(1-\bar{\alpha_{t-1}})}{1-\bar{\alpha_t}}\mathbf{I}).
 \end{split}
 $$
 
@@ -201,17 +201,17 @@ In practice, we treat each datapoint $\mathbf{x}^{(0)}$ as an individual sample 
 $$
 \begin{split}
 K\simeq &-\sum_{t=2}^T \int q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(0)}) D_{KL}(q(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(0)},\mathbf{x}^{(t)})\Vert p(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(t)})) \ d\mathbf{x}^{(t)}\\
-&+\int q(\mathbf{x}^{(1)}\vert \mathbf{x}^{(0)}) \log p(\mathbf{x}^{(0)}\vert \mathbf{x}^{(1)})\ d\mathbf{x}^{(1)}-\frac{1}{2}(\bar{\alpha}_T{\lVert \mathbf{x}^{(0)}\rVert}^2-n\bar{\alpha}_T-n\log (1-\bar{\alpha}_T)).
+&+\int q(\mathbf{x}^{(1)}\vert \mathbf{x}^{(0)}) \log p(\mathbf{x}^{(0)}\vert \mathbf{x}^{(1)})\ d\mathbf{x}^{(1)}-\frac{1}{2}(\bar{\alpha_T}{\lVert \mathbf{x}^{(0)}\rVert}^2-n\bar{\alpha_T}-n\log (1-\bar{\alpha_T})).
 \end{split}
 $$
 
 The integral here is still not friendly and cannot be computed directly. Therefore, we use Monte Carlo estimates again to avoid integral calculation and yield:
 
 $$
-K\simeq -\sum_{t=2}^T D_{KL}(q(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(0)},\mathbf{x}^{(t)})\Vert p(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(t)}))+\log p(\mathbf{x}^{(0)}\vert \mathbf{x}^{(1)})-\frac{1}{2}(\bar{\alpha}_T{\lVert \mathbf{x}^{(0)}\rVert}^2-n\bar{\alpha}_T-n\log (1-\bar{\alpha}_T)).
+K\simeq -\sum_{t=2}^T D_{KL}(q(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(0)},\mathbf{x}^{(t)})\Vert p(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(t)}))+\log p(\mathbf{x}^{(0)}\vert \mathbf{x}^{(1)})-\frac{1}{2}(\bar{\alpha_T}{\lVert \mathbf{x}^{(0)}\rVert}^2-n\bar{\alpha_T}-n\log (1-\bar{\alpha_T})).
 $$
 
-In this estimation, $\mathbf{x}^{(0)}$ is given from the dataset and for each time step t, $\mathbf{x}^{(t)}$ is a sample from $q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(0)})=\mathcal{N}(\mathbf{x}^{(t)};\sqrt{\bar{\alpha}_t}\mathbf{x}^{(0)},(1-\bar{\alpha}_t)\mathbf{I})$.
+In this estimation, $\mathbf{x}^{(0)}$ is given from the dataset and for each time step t, $\mathbf{x}^{(t)}$ is a sample from $q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(0)})=\mathcal{N}(\mathbf{x}^{(t)};\sqrt{\bar{\alpha_t}}\mathbf{x}^{(0)},(1-\bar{\alpha_t})\mathbf{I})$.
 
 ### 3. Optimization
 Use notations:
@@ -225,7 +225,7 @@ Let:
 $$
 \begin{split}
 \mathcal{L}(\mathbf{x}^{(0\cdots T)};\alpha_{1\cdots T},\boldsymbol{\mu}_{1\cdots T},\boldsymbol{\Sigma}_{1\cdots T})=&\sum_{t=2}^T D_{KL}(q(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(0)},\mathbf{x}^{(t)})\Vert p(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(t)}))\\
-&-\log p(\mathbf{x}^{(0)}\vert \mathbf{x}^{(1)})+\frac{1}{2}(\bar{\alpha}_T{\lVert \mathbf{x}^{(0)}\rVert}^2-n\bar{\alpha}_T-n\log (1-\bar{\alpha}_T)).
+&-\log p(\mathbf{x}^{(0)}\vert \mathbf{x}^{(1)})+\frac{1}{2}(\bar{\alpha_T}{\lVert \mathbf{x}^{(0)}\rVert}^2-n\bar{\alpha_T}-n\log (1-\bar{\alpha_T})).
 \end{split}
 $$
 
@@ -247,31 +247,31 @@ However, this setting has two potential shortcomings. Firstly, we need to estima
 To alleviate these two drawbacks, we choose $\boldsymbol{\Sigma}_t=\sigma_t^2\mathbf{I}$, and for $t>1$ the KL-divergence becomes:
 
 $$
-D_{KL}(q(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(0)},\mathbf{x}^{(t)})\Vert p(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(t)}))=\frac{1}{2}(n\log \frac{\sigma_t^2}{\bar{\sigma}_t^2}-n+n\frac{\bar{\sigma}_t^2}{\sigma_t^2}+\frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu}_t-\bar{\boldsymbol{\mu}}_t\rVert}^2),
+D_{KL}(q(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(0)},\mathbf{x}^{(t)})\Vert p(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(t)}))=\frac{1}{2}(n\log \frac{\sigma_t^2}{\bar{\sigma_t}^2}-n+n\frac{\bar{\sigma_t}^2}{\sigma_t^2}+\frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu}_t-\bar{\boldsymbol{\mu}_t}\rVert}^2),
 $$
 
 where
 
 $$
-\bar{\boldsymbol{\mu}}_t=\frac{(1-\bar{\alpha}_{t-1})\sqrt{\alpha_t}\mathbf{x}^{(t)}+(1-\alpha_t)\sqrt{\bar{\alpha}_{t-1}}\mathbf{x}^{(0)}}{1-\bar{\alpha}_t},\bar{\sigma}_t^2=\frac{(1-\alpha_t)(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_t}.
+\bar{\boldsymbol{\mu}_t}=\frac{(1-\bar{\alpha_{t-1}})\sqrt{\alpha_t}\mathbf{x}^{(t)}+(1-\alpha_t)\sqrt{\bar{\alpha_{t-1}}}\mathbf{x}^{(0)}}{1-\bar{\alpha_t}},\bar{\sigma_t}^2=\frac{(1-\alpha_t)(1-\bar{\alpha_{t-1}})}{1-\bar{\alpha_t}}.
 $$
 
-In addition, define $\bar{\boldsymbol{\mu}}_1=\mathbf{x}^{(0)}$. We have:
+In addition, define $\bar{\boldsymbol{\mu}_1}=\mathbf{x}^{(0)}$. We have:
 
 $$
-\log p(\mathbf{x}^{(0)}\vert \mathbf{x}^{(1)})=-\frac{1}{2} (n\log 2\pi \sigma_1^2+\frac{1}{\sigma_1^2}{\lVert \boldsymbol{\mu}_1-\mathbf{x}^{(0)}\rVert}^2)=-\frac{1}{2} (n\log 2\pi \sigma_1^2+\frac{1}{\sigma_1^2}{\lVert \boldsymbol{\mu}_1-\bar{\boldsymbol{\mu}}_1\rVert}^2),
+\log p(\mathbf{x}^{(0)}\vert \mathbf{x}^{(1)})=-\frac{1}{2} (n\log 2\pi \sigma_1^2+\frac{1}{\sigma_1^2}{\lVert \boldsymbol{\mu}_1-\mathbf{x}^{(0)}\rVert}^2)=-\frac{1}{2} (n\log 2\pi \sigma_1^2+\frac{1}{\sigma_1^2}{\lVert \boldsymbol{\mu}_1-\bar{\boldsymbol{\mu}_1}\rVert}^2),
 $$
 
 and
 
 $$
-\mathcal{L}=\frac{1}{2}(\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu}_t-\bar{\boldsymbol{\mu}}_t\rVert}^2+\bar{\alpha}_T{\lVert \mathbf{x}^{(0)}\rVert}^2+\sum_{t=2}^T (n\log \frac{\sigma_t^2}{\bar{\sigma}_t^2}-n+n\frac{\bar{\sigma}_t^2}{\sigma_t^2})+n\log 2\pi \sigma_1^2-n\bar{\alpha}_T-n\log (1-\bar{\alpha}_T)).
+\mathcal{L}=\frac{1}{2}(\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu}_t-\bar{\boldsymbol{\mu}_t}\rVert}^2+\bar{\alpha_T}{\lVert \mathbf{x}^{(0)}\rVert}^2+\sum_{t=2}^T (n\log \frac{\sigma_t^2}{\bar{\sigma_t}^2}-n+n\frac{\bar{\sigma_t}^2}{\sigma_t^2})+n\log 2\pi \sigma_1^2-n\bar{\alpha_T}-n\log (1-\bar{\alpha_T})).
 $$
 
 Because the optimization is irrelevant to a constant scaling, we define the loss function as:
 
 $$
-\mathcal{L}_0=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu}_t-\bar{\boldsymbol{\mu}}_t\rVert}^2+\bar{\alpha}_T{\lVert \mathbf{x}^{(0)}\rVert}^2+n(\sum_{t=2}^T (\log \frac{\sigma_t^2}{\bar{\sigma}_t^2}-1+\frac{\bar{\sigma}_t^2}{\sigma_t^2})+\log 2\pi \sigma_1^2-\bar{\alpha}_T-\log (1-\bar{\alpha}_T)).
+\mathcal{L}_0=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu}_t-\bar{\boldsymbol{\mu}_t}\rVert}^2+\bar{\alpha_T}{\lVert \mathbf{x}^{(0)}\rVert}^2+n(\sum_{t=2}^T (\log \frac{\sigma_t^2}{\bar{\sigma_t}^2}-1+\frac{\bar{\sigma_t}^2}{\sigma_t^2})+\log 2\pi \sigma_1^2-\bar{\alpha_T}-\log (1-\bar{\alpha_T})).
 $$
 
 #### 3.2 Learnable Parameters Setting
@@ -282,16 +282,16 @@ $$\alpha_{1\cdots T},\boldsymbol{\mu}_{1\cdots T},\sigma^2_{1\cdots T}.$$
 We can consider $\alpha_{1\cdots T}$ as hyperparameters and set them to constants instead of learnable parameters during training. Then the optimization becomes:
 
 $$
-\operatorname*{argmin}_{\boldsymbol{\mu}_{1\cdots T},\ \sigma^2_{1\cdots T}}\mathcal{L}_1,\text{ where } \mathcal{L}_1=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu}_t-\bar{\boldsymbol{\mu}}_t\rVert}^2+n\sum_{t=1}^T \log \sigma_t^2+n\sum_{t=2}^T\frac{\bar{\sigma}_t^2}{\sigma_t^2}.
+\operatorname*{argmin}_{\boldsymbol{\mu}_{1\cdots T},\ \sigma^2_{1\cdots T}}\mathcal{L}_1,\text{ where } \mathcal{L}_1=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu}_t-\bar{\boldsymbol{\mu}_t}\rVert}^2+n\sum_{t=1}^T \log \sigma_t^2+n\sum_{t=2}^T\frac{\bar{\sigma_t}^2}{\sigma_t^2}.
 $$
 
 In addition, to further simplify the optimization, we can set $\sigma^2_{1\cdots T}$ to constants. In this case, the optimization is to find $\boldsymbol{\mu}_{1\cdots T}$ which minimize:
 
 $$
-\mathcal{L}_2=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu}_t-\bar{\boldsymbol{\mu}}_t\rVert}^2.
+\mathcal{L}_2=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu}_t-\bar{\boldsymbol{\mu}_t}\rVert}^2.
 $$
 
-The constant values of $\sigma^2_{1\cdots T}$ can be set as $\sigma^2_t=\beta_t$ or $\sigma^2_t=\bar{\sigma}_t^2$ for $t>1$, which corresponds to the setting that $p(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(t)})$ has the same covariance matrix as $q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(t-1)})$ or $q(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(0)},\mathbf{x}^{(t)})$, respectively.
+The constant values of $\sigma^2_{1\cdots T}$ can be set as $\sigma^2_t=\beta_t$ or $\sigma^2_t=\bar{\sigma_t}^2$ for $t>1$, which corresponds to the setting that $p(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(t)})$ has the same covariance matrix as $q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(t-1)})$ or $q(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(0)},\mathbf{x}^{(t)})$, respectively.
 
 For $\boldsymbol{\mu}_{1\cdots T}$, we can use a shared deep neural network parameterized by $\theta$ to estimate them in three settings. The network takes a vector with the dimensionality of $\mathbf{x}^{(0)}$ as input and outputs a vector with the same dimensionality. In order to behave differently across different time steps, the network should also be time-aware.
 
@@ -302,40 +302,40 @@ $$
 $$
 
 $$
-\mathcal{L}_2^{\text{dir}}=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu}_t-\bar{\boldsymbol{\mu}}_t\rVert}^2=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\hat\mu}_\theta(\mathbf{x}^{(t)},t)-\frac{(1-\bar{\alpha}_{t-1})\sqrt{\alpha_t}\mathbf{x}^{(t)}+(1-\alpha_t)\sqrt{\bar{\alpha}_{t-1}}\mathbf{x}^{(0)}}{1-\bar{\alpha}_t}\rVert}^2.
+\mathcal{L}_2^{\text{dir}}=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu}_t-\bar{\boldsymbol{\mu}_t}\rVert}^2=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\hat\mu}_\theta(\mathbf{x}^{(t)},t)-\frac{(1-\bar{\alpha_{t-1}})\sqrt{\alpha_t}\mathbf{x}^{(t)}+(1-\alpha_t)\sqrt{\bar{\alpha_{t-1}}}\mathbf{x}^{(0)}}{1-\bar{\alpha_t}}\rVert}^2.
 $$
 
 ##### 3.2.2 Reconstruction
 
 $$
-\boldsymbol{\mu}_t=\frac{(1-\bar{\alpha}_{t-1})\sqrt{\alpha_t}\mathbf{x}^{(t)}+(1-\alpha_t)\sqrt{\bar{\alpha}_{t-1}}\mathbf{\hat x}_\theta^{(0)}(\mathbf{x}^{(t)},t)}{1-\bar{\alpha}_t},
+\boldsymbol{\mu}_t=\frac{(1-\bar{\alpha_{t-1}})\sqrt{\alpha_t}\mathbf{x}^{(t)}+(1-\alpha_t)\sqrt{\bar{\alpha_{t-1}}}\mathbf{\hat x}_\theta^{(0)}(\mathbf{x}^{(t)},t)}{1-\bar{\alpha_t}},
 $$
 
 $$
-\mathcal{L}_2^{\text{rec}}=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu}_t-\bar{\boldsymbol{\mu}}_t\rVert}^2=\sum_{t=1}^T \frac{\bar{\alpha}_{t-1}{(1-\alpha_t)}^2}{\sigma_t^2{(1-\bar{\alpha}_t)}^2}{\lVert \mathbf{\hat x}_\theta^{(0)}(\mathbf{x}^{(t)},t)-\mathbf{x}^{(0)}\rVert}^2.
+\mathcal{L}_2^{\text{rec}}=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu}_t-\bar{\boldsymbol{\mu}_t}\rVert}^2=\sum_{t=1}^T \frac{\bar{\alpha_{t-1}}{(1-\alpha_t)}^2}{\sigma_t^2{(1-\bar{\alpha_t})}^2}{\lVert \mathbf{\hat x}_\theta^{(0)}(\mathbf{x}^{(t)},t)-\mathbf{x}^{(0)}\rVert}^2.
 $$
 
 ##### 3.2.3 Denoising
-Recall that $\mathbf{x}^{(t)}$ is sampled from $q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(0)})=\mathcal{N}(\mathbf{x}^{(t)};\sqrt{\bar{\alpha}_t}\mathbf{x}^{(0)},(1-\bar{\alpha}_t)\mathbf{I})$ by using reparameterization trick $\mathbf{x}^{(t)}=\sqrt{\bar{\alpha}_t}\mathbf{x}^{(0)}+\sqrt{1-\bar{\alpha}_t}\boldsymbol{\epsilon}_t$, where $\boldsymbol{\epsilon}_t\sim\mathcal{N}(\mathbf{0},\mathbf{I})$. We have:
+Recall that $\mathbf{x}^{(t)}$ is sampled from $q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(0)})=\mathcal{N}(\mathbf{x}^{(t)};\sqrt{\bar{\alpha_t}}\mathbf{x}^{(0)},(1-\bar{\alpha_t})\mathbf{I})$ by using reparameterization trick $\mathbf{x}^{(t)}=\sqrt{\bar{\alpha_t}}\mathbf{x}^{(0)}+\sqrt{1-\bar{\alpha_t}}\boldsymbol{\epsilon}_t$, where $\boldsymbol{\epsilon}_t\sim\mathcal{N}(\mathbf{0},\mathbf{I})$. We have:
 
 $$
-\mathbf{x}^{(0)}=\frac{\mathbf{x}^{(t)}-\sqrt{1-\bar{\alpha}_t}\boldsymbol{\epsilon}_t}{\sqrt{\bar{\alpha}_t}},
+\mathbf{x}^{(0)}=\frac{\mathbf{x}^{(t)}-\sqrt{1-\bar{\alpha_t}}\boldsymbol{\epsilon}_t}{\sqrt{\bar{\alpha_t}}},
 $$
 
 $$
-\bar{\boldsymbol{\mu}}_t=\frac{(1-\bar{\alpha}_{t-1})\sqrt{\alpha_t}\mathbf{x}^{(t)}+(1-\alpha_t)\sqrt{\bar{\alpha}_{t-1}}\mathbf{x}^{(0)}}{1-\bar{\alpha}_t}=\frac{1}{\sqrt{\alpha_t}}(\mathbf{x}^{(t)}-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\boldsymbol{\epsilon}_t).
+\bar{\boldsymbol{\mu}_t}=\frac{(1-\bar{\alpha_{t-1}})\sqrt{\alpha_t}\mathbf{x}^{(t)}+(1-\alpha_t)\sqrt{\bar{\alpha_{t-1}}}\mathbf{x}^{(0)}}{1-\bar{\alpha_t}}=\frac{1}{\sqrt{\alpha_t}}(\mathbf{x}^{(t)}-\frac{1-\alpha_t}{\sqrt{1-\bar{\alpha_t}}}\boldsymbol{\epsilon}_t).
 $$
 
 We set:
 
 $$
-\boldsymbol{\mu}_t=\frac{1}{\sqrt{\alpha_t}}(\mathbf{x}^{(t)}-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\boldsymbol{\hat\epsilon}_\theta(\mathbf{x}^{(t)},t)).
+\boldsymbol{\mu}_t=\frac{1}{\sqrt{\alpha_t}}(\mathbf{x}^{(t)}-\frac{1-\alpha_t}{\sqrt{1-\bar{\alpha_t}}}\boldsymbol{\hat\epsilon}_\theta(\mathbf{x}^{(t)},t)).
 $$
 
 Then the loss function becomes:
 
 $$
-\mathcal{L}_2^{\text{den}}=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu}_t-\bar{\boldsymbol{\mu}}_t\rVert}^2=\sum_{t=1}^T \frac{{(1-\alpha_t)}^2}{\sigma_t^2\alpha_t(1-\bar{\alpha}_t)}{\lVert \boldsymbol{\hat\epsilon}_\theta(\mathbf{x}^{(t)},t)-\boldsymbol{\epsilon}_t\rVert}^2.
+\mathcal{L}_2^{\text{den}}=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu}_t-\bar{\boldsymbol{\mu}_t}\rVert}^2=\sum_{t=1}^T \frac{{(1-\alpha_t)}^2}{\sigma_t^2\alpha_t(1-\bar{\alpha_t})}{\lVert \boldsymbol{\hat\epsilon}_\theta(\mathbf{x}^{(t)},t)-\boldsymbol{\epsilon}_t\rVert}^2.
 $$
 
 We prefer the last two loss functions because they remove the simple linear transformation from the input to the output. Now, the optimization becomes $\operatorname*{argmin}_{\theta}\mathcal{L}_2$.
@@ -345,7 +345,7 @@ We prefer the last two loss functions because they remove the simple linear tran
 In deep learning, to optimize $\mathcal{L}_2$ for one datapoint, we need to do sampling and forward the neural network for $T$ times, and then do backward. For large $T$, the model needs to wait for a huge amount of time and use a large amount of memory for one update of parameters. This is both time-inefficient and memory-consuming. Since $\mathcal{L}_2$ is a sum of $T$ sub-functions, like stochastic gradient descent to gradient descent, for each iteration, we can sample one $t$ uniformly from $1\cdots T$ and do optimization:
 
 $$
-\operatorname*{argmin}_{\theta}\frac{\bar{\alpha}_{t-1}{(1-\alpha_t)}^2}{\sigma_t^2{(1-\bar{\alpha}_t)}^2}{\lVert \mathbf{\hat x}_\theta^{(0)}(\mathbf{x}^{(t)},t)-\mathbf{x}^{(0)}\rVert}^2 \text{ or } \operatorname*{argmin}_{\theta}\frac{{(1-\alpha_t)}^2}{\sigma_t^2\alpha_t(1-\bar{\alpha}_t)}{\lVert \boldsymbol{\hat\epsilon}_\theta(\mathbf{x}^{(t)},t)-\boldsymbol{\epsilon}_t\rVert}^2.
+\operatorname*{argmin}_{\theta}\frac{\bar{\alpha_{t-1}}{(1-\alpha_t)}^2}{\sigma_t^2{(1-\bar{\alpha_t})}^2}{\lVert \mathbf{\hat x}_\theta^{(0)}(\mathbf{x}^{(t)},t)-\mathbf{x}^{(0)}\rVert}^2 \text{ or } \operatorname*{argmin}_{\theta}\frac{{(1-\alpha_t)}^2}{\sigma_t^2\alpha_t(1-\bar{\alpha_t})}{\lVert \boldsymbol{\hat\epsilon}_\theta(\mathbf{x}^{(t)},t)-\boldsymbol{\epsilon}_t\rVert}^2.
 $$
 
 This is equivalent to:
@@ -375,7 +375,7 @@ In this repository, while we support three settings of $\sigma_t^2$ ("beta", "si
 CUDA_VISIBLE_DEVICE=0 python gaussian_diffusion.py
 ```
 ### Code Organization
-**beta_shedule.py** is used for produing $\beta_t$ and relevant $\alpha_t, \bar{\alpha}_t$.
+**beta_shedule.py** is used for produing $\beta_t$ and relevant $\alpha_t, \bar{\alpha_t}$.
 
 **time_aware_module.py** is used for defining the time-aware neural network. We use a U-Net with additive time embeddings to make the neural net time-aware.
 
