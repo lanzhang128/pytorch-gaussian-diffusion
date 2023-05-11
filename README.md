@@ -232,7 +232,7 @@ $$
 The optimization problem is:
 
 $$
-\operatorname*{argmax} K=\operatorname*{argmin}_{\alpha_{1\cdots T},\ \boldsymbol{\mu_{1\cdots T}},\ \boldsymbol{\Sigma_{1\cdots T}}}\mathcal{L}(\mathbf{x}^{(0\cdots T)};\alpha_{1\cdots T},\boldsymbol{\mu_{1\cdots T}},\boldsymbol{\Sigma_{1\cdots T}}).
+\arg\max K=\arg\min_{\alpha_{1\cdots T},\ \boldsymbol{\mu_{1\cdots T}},\ \boldsymbol{\Sigma_{1\cdots T}}}\mathcal{L}(\mathbf{x}^{(0\cdots T)};\alpha_{1\cdots T},\boldsymbol{\mu_{1\cdots T}},\boldsymbol{\Sigma_{1\cdots T}}).
 $$
 
 #### 3.1 Choice of $\boldsymbol{\Sigma_t}$
@@ -271,24 +271,24 @@ $$
 Because the optimization is irrelevant to a constant scaling, we define the loss function as:
 
 $$
-\mathcal{L_0}=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu_t}-\bar{\boldsymbol{\mu_t}}\rVert}^2+\bar{\alpha_T}{\lVert \mathbf{x}^{(0)}\rVert}^2+n(\sum_{t=2}^T (\log \frac{\sigma_t^2}{\bar{\sigma_t}^2}-1+\frac{\bar{\sigma_t}^2}{\sigma_t^2})+\log 2\pi \sigma_1^2-\bar{\alpha_T}-\log (1-\bar{\alpha_T})).
+\mathcal{L_\text{0}}=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu_t}-\bar{\boldsymbol{\mu_t}}\rVert}^2+\bar{\alpha_T}{\lVert \mathbf{x}^{(0)}\rVert}^2+n(\sum_{t=2}^T (\log \frac{\sigma_t^2}{\bar{\sigma_t}^2}-1+\frac{\bar{\sigma_t}^2}{\sigma_t^2})+\log 2\pi \sigma_1^2-\bar{\alpha_T}-\log (1-\bar{\alpha_T})).
 $$
 
 #### 3.2 Learnable Parameters Setting
-In $\mathcal{L_0}$, learnable parameters are: 
+In $\mathcal{L_\text{0}}$, learnable parameters are: 
 
 $$\alpha_{1\cdots T},\boldsymbol{\mu_{1\cdots T}},\sigma^2_{1\cdots T}.$$
 
 We can consider $\alpha_{1\cdots T}$ as hyperparameters and set them to constants instead of learnable parameters during training. Then the optimization becomes:
 
 $$
-\operatorname*{argmin}_{\boldsymbol{\mu_{1\cdots T}},\ \sigma^2_{1\cdots T}}\mathcal{L}_1,\text{ where } \mathcal{L}_1=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu_t}-\bar{\boldsymbol{\mu_t}}\rVert}^2+n\sum_{t=1}^T \log \sigma_t^2+n\sum_{t=2}^T\frac{\bar{\sigma_t}^2}{\sigma_t^2}.
+\arg\min_{\boldsymbol{\mu_{1\cdots T}},\ \sigma^2_{1\cdots T}}\mathcal{L_\text{1}},\text{ where } \mathcal{L_\text{1}}=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu_t}-\bar{\boldsymbol{\mu_t}}\rVert}^2+n\sum_{t=1}^T \log \sigma_t^2+n\sum_{t=2}^T\frac{\bar{\sigma_t}^2}{\sigma_t^2}.
 $$
 
 In addition, to further simplify the optimization, we can set $\sigma^2_{1\cdots T}$ to constants. In this case, the optimization is to find $\boldsymbol{\mu_{1\cdots T}}$ which minimize:
 
 $$
-\mathcal{L}_2=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu_t}-\bar{\boldsymbol{\mu_t}}\rVert}^2.
+\mathcal{L_\text{2}}=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu_t}-\bar{\boldsymbol{\mu_t}}\rVert}^2.
 $$
 
 The constant values of $\sigma^2_{1\cdots T}$ can be set as $\sigma^2_t=\beta_t$ or $\sigma^2_t=\bar{\sigma_t}^2$ for $t>1$, which corresponds to the setting that $p(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(t)})$ has the same covariance matrix as $q(\mathbf{x}^{(t)}\vert \mathbf{x}^{(t-1)})$ or $q(\mathbf{x}^{(t-1)}\vert \mathbf{x}^{(0)},\mathbf{x}^{(t)})$, respectively.
@@ -298,21 +298,21 @@ For $\boldsymbol{\mu_{1\cdots T}}$, we can use a shared deep neural network para
 ##### 3.2.1 Direct Prediction
 
 $$
-\boldsymbol{\mu_t}=\boldsymbol{\hat\mu}_\theta(\mathbf{x}^{(t)},t),
+\boldsymbol{\mu_t}=\boldsymbol{\hat\mu_\theta}(\mathbf{x}^{(t)},t),
 $$
 
 $$
-\mathcal{L}_2^{\text{dir}}=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu_t}-\bar{\boldsymbol{\mu_t}}\rVert}^2=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\hat\mu}_\theta(\mathbf{x}^{(t)},t)-\frac{(1-\bar{\alpha_{t-1}})\sqrt{\alpha_t}\mathbf{x}^{(t)}+(1-\alpha_t)\sqrt{\bar{\alpha_{t-1}}}\mathbf{x}^{(0)}}{1-\bar{\alpha_t}}\rVert}^2.
+\mathcal{L_\text{2}^{\text{dir}}}=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu_t}-\bar{\boldsymbol{\mu_t}}\rVert}^2=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\hat\mu_\theta}(\mathbf{x}^{(t)},t)-\frac{(1-\bar{\alpha_{t-1}})\sqrt{\alpha_t}\mathbf{x}^{(t)}+(1-\alpha_t)\sqrt{\bar{\alpha_{t-1}}}\mathbf{x}^{(0)}}{1-\bar{\alpha_t}}\rVert}^2.
 $$
 
 ##### 3.2.2 Reconstruction
 
 $$
-\boldsymbol{\mu_t}=\frac{(1-\bar{\alpha_{t-1}})\sqrt{\alpha_t}\mathbf{x}^{(t)}+(1-\alpha_t)\sqrt{\bar{\alpha_{t-1}}}\mathbf{\hat x}_\theta^{(0)}(\mathbf{x}^{(t)},t)}{1-\bar{\alpha_t}},
+\boldsymbol{\mu_t}=\frac{(1-\bar{\alpha_{t-1}})\sqrt{\alpha_t}\mathbf{x}^{(t)}+(1-\alpha_t)\sqrt{\bar{\alpha_{t-1}}}\mathbf{\hat x_\theta}^{(0)}(\mathbf{x}^{(t)},t)}{1-\bar{\alpha_t}},
 $$
 
 $$
-\mathcal{L}_2^{\text{rec}}=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu_t}-\bar{\boldsymbol{\mu_t}}\rVert}^2=\sum_{t=1}^T \frac{\bar{\alpha_{t-1}}{(1-\alpha_t)}^2}{\sigma_t^2{(1-\bar{\alpha_t})}^2}{\lVert \mathbf{\hat x}_\theta^{(0)}(\mathbf{x}^{(t)},t)-\mathbf{x}^{(0)}\rVert}^2.
+\mathcal{L_\text{2}^{\text{rec}}}=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu_t}-\bar{\boldsymbol{\mu_t}}\rVert}^2=\sum_{t=1}^T \frac{\bar{\alpha_{t-1}}{(1-\alpha_t)}^2}{\sigma_t^2{(1-\bar{\alpha_t})}^2}{\lVert \mathbf{\hat x_\theta}^{(0)}(\mathbf{x}^{(t)},t)-\mathbf{x}^{(0)}\rVert}^2.
 $$
 
 ##### 3.2.3 Denoising
@@ -329,41 +329,41 @@ $$
 We set:
 
 $$
-\boldsymbol{\mu_t}=\frac{1}{\sqrt{\alpha_t}}(\mathbf{x}^{(t)}-\frac{1-\alpha_t}{\sqrt{1-\bar{\alpha_t}}}\boldsymbol{\hat\epsilon}_\theta(\mathbf{x}^{(t)},t)).
+\boldsymbol{\mu_t}=\frac{1}{\sqrt{\alpha_t}}(\mathbf{x}^{(t)}-\frac{1-\alpha_t}{\sqrt{1-\bar{\alpha_t}}}\boldsymbol{\hat\epsilon_\theta}(\mathbf{x}^{(t)},t)).
 $$
 
 Then the loss function becomes:
 
 $$
-\mathcal{L}_2^{\text{den}}=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu_t}-\bar{\boldsymbol{\mu_t}}\rVert}^2=\sum_{t=1}^T \frac{{(1-\alpha_t)}^2}{\sigma_t^2\alpha_t(1-\bar{\alpha_t})}{\lVert \boldsymbol{\hat\epsilon}_\theta(\mathbf{x}^{(t)},t)-\boldsymbol{\epsilon_t}\rVert}^2.
+\mathcal{L_\text{2}^{\text{den}}}=\sum_{t=1}^T \frac{1}{\sigma_t^2}{\lVert \boldsymbol{\mu_t}-\bar{\boldsymbol{\mu_t}}\rVert}^2=\sum_{t=1}^T \frac{{(1-\alpha_t)}^2}{\sigma_t^2\alpha_t(1-\bar{\alpha_t})}{\lVert \boldsymbol{\hat\epsilon_\theta}(\mathbf{x}^{(t)},t)-\boldsymbol{\epsilon_t}\rVert}^2.
 $$
 
-We prefer the last two loss functions because they remove the simple linear transformation from the input to the output. Now, the optimization becomes $\operatorname*{argmin}_{\theta}\mathcal{L}_2$.
+We prefer the last two loss functions because they remove the simple linear transformation from the input to the output. Now, the optimization becomes $\arg\min_{\theta}\mathcal{L_\text{2}}$.
 
 #### 3.3 Further Simplification for Training
 
-In deep learning, to optimize $\mathcal{L}_2$ for one datapoint, we need to do sampling and forward the neural network for $T$ times, and then do backward. For large $T$, the model needs to wait for a huge amount of time and use a large amount of memory for one update of parameters. This is both time-inefficient and memory-consuming. Since $\mathcal{L}_2$ is a sum of $T$ sub-functions, like stochastic gradient descent to gradient descent, for each iteration, we can sample one $t$ uniformly from $1\cdots T$ and do optimization:
+In deep learning, to optimize $\mathcal{L_\text{2}}$ for one datapoint, we need to do sampling and forward the neural network for $T$ times, and then do backward. For large $T$, the model needs to wait for a huge amount of time and use a large amount of memory for one update of parameters. This is both time-inefficient and memory-consuming. Since $\mathcal{L_\text{2}}$ is a sum of $T$ sub-functions, like stochastic gradient descent to gradient descent, for each iteration, we can sample one $t$ uniformly from $1\cdots T$ and do optimization:
 
 $$
-\operatorname*{argmin}_{\theta}\frac{\bar{\alpha_{t-1}}{(1-\alpha_t)}^2}{\sigma_t^2{(1-\bar{\alpha_t})}^2}{\lVert \mathbf{\hat x}_\theta^{(0)}(\mathbf{x}^{(t)},t)-\mathbf{x}^{(0)}\rVert}^2 \text{ or } \operatorname*{argmin}_{\theta}\frac{{(1-\alpha_t)}^2}{\sigma_t^2\alpha_t(1-\bar{\alpha_t})}{\lVert \boldsymbol{\hat\epsilon}_\theta(\mathbf{x}^{(t)},t)-\boldsymbol{\epsilon_t}\rVert}^2.
+\arg\min_{\theta}\frac{\bar{\alpha_{t-1}}{(1-\alpha_t)}^2}{\sigma_t^2{(1-\bar{\alpha_t})}^2}{\lVert \mathbf{\hat x_\theta}^{(0)}(\mathbf{x}^{(t)},t)-\mathbf{x}^{(0)}\rVert}^2 \text{ or } \arg\min_{\theta}\frac{{(1-\alpha_t)}^2}{\sigma_t^2\alpha_t(1-\bar{\alpha_t})}{\lVert \boldsymbol{\hat\epsilon_\theta}(\mathbf{x}^{(t)},t)-\boldsymbol{\epsilon_t}\rVert}^2.
 $$
 
 This is equivalent to:
 
 $$
-\operatorname*{argmin}_{\theta}{\lVert \mathbf{\hat x}_\theta^{(0)}(\mathbf{x}^{(t)},t)-\mathbf{x}^{(0)}\rVert}^2 \text{ or } \operatorname*{argmin}_{\theta}{\lVert \boldsymbol{\hat\epsilon}_\theta(\mathbf{x}^{(t)},t)-\boldsymbol{\epsilon_t}\rVert}^2.
+\arg\min_{\theta}{\lVert \mathbf{\hat x_\theta}^{(0)}(\mathbf{x}^{(t)},t)-\mathbf{x}^{(0)}\rVert}^2 \text{ or } \arg\min_{\theta}{\lVert \boldsymbol{\hat\epsilon_\theta}(\mathbf{x}^{(t)},t)-\boldsymbol{\epsilon_t}\rVert}^2.
 $$
 
 To keep the consistency, we define:
 
 $$
-\mathcal{L}_{simple}^{\text{rec}}=\mathbb{E}_t({\lVert \mathbf{\hat x}_\theta^{(0)}(\mathbf{x}^{(t)},t)-\mathbf{x}^{(0)}\rVert}^2),
+\mathcal{L_\text{simple}^{\text{rec}}}=\mathbb{E_\text{t}}({\lVert \mathbf{\hat x_\theta}^{(0)}(\mathbf{x}^{(t)},t)-\mathbf{x}^{(0)}\rVert}^2),
 $$
 
 and
 
 $$
-\mathcal{L}_{simple}^{\text{den}}=\mathbb{E}_t({\lVert \boldsymbol{\hat\epsilon}_\theta(\mathbf{x}^{(t)},t)-\boldsymbol{\epsilon_t}\rVert}^2).
+\mathcal{L_\text{simple}^{\text{den}}}=\mathbb{E_\text{t}}({\lVert \boldsymbol{\hat\epsilon_\theta}(\mathbf{x}^{(t)},t)-\boldsymbol{\epsilon_t}\rVert}^2).
 $$
 
 These two functions are used for the simplification of optimization.
